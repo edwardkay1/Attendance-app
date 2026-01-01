@@ -141,7 +141,7 @@ frontend/
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
+   git clone <https://github.com/edwardkay1/UMU-Attendace-App>
    cd attendance-app/frontend
    ```
 
