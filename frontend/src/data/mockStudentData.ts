@@ -111,6 +111,7 @@ export const mockStudents: Student[] = [
     facultyId: 'arts',
     isApproved: true,
     createdAt: '2024-01-15T10:00:00Z'
+  }
 ];
 
 export const mockAttendanceRecords: AttendanceRecord[] = [

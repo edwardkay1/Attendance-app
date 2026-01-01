@@ -132,7 +132,7 @@ export default function StudentDashboard() {
         <div className="p-8 text-white shadow-xl bg-gradient-to-r from-green-500 via-emerald-500 to-teal-600 rounded-2xl">
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <h3 className="mb-2 text-2xl font-bold">Ready to mark attendance? 📱</h3>
+              <h3 className="mb-2 text-2xl font-bold">Ready to mark attendance? </h3>
               <p className="mb-4 text-green-100">Scan the QR code provided by your lecturer to mark your attendance for today's class.</p>
               {lastAttendanceMarked && (
                 <p className="text-sm text-green-200">

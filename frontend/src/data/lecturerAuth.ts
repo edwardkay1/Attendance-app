@@ -54,6 +54,7 @@ export const lecturerCredentials: Array<{
       isApproved: true,
       createdAt: '2024-01-17T10:00:00Z'
   }
+}
 ];
 
 // Helper functions

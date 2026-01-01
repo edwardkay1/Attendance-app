@@ -118,6 +118,7 @@ export const mockCourses: Course[] = [
     ],
     isApproved: true,
     createdAt: '2024-01-17T10:00:00Z'
+  }
 ];
 
 export const mockQRCodeSessions: QRCodeSession[] = [
