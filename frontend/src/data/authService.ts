@@ -1,6 +1,6 @@
-import { authenticateStudent, getStudentById } from './studentAuth';
-import { authenticateLecturer, getLecturerById } from './lecturerAuth';
-import { authenticateAdmin, getAdminById } from './adminAuth';
+import { authenticateStudent } from './studentAuth';
+import { authenticateLecturer } from './lecturerAuth';
+import { authenticateAdmin } from './adminAuth';
 import type { Student } from '../types/student';
 import type { Lecturer } from '../types/lecturer';
 import type { Admin } from '../types/admin';
@@ -14,6 +14,21 @@ export interface AuthUser {
   type: UserType;
   data: Student | Lecturer | Admin;
 }
+
+export type User = AuthUser; // Alias for backward compatibility
+
+// Helper function to get current user from localStorage
+export const getCurrentUser = (): AuthUser | null => {
+  const userData = localStorage.getItem('currentUser');
+  if (userData) {
+    try {
+      return JSON.parse(userData);
+    } catch {
+      return null;
+    }
+  }
+  return null;
+};
 
 export interface LoginCredentials {
   email: string;
@@ -88,7 +103,7 @@ export class AuthService {
   }
 
   static register(credentials: RegisterCredentials): boolean {
-    const { name, email, password, userType, facultyId, studentId, employeeId, department, course, year } = credentials;
+    const { name, email, userType, facultyId, studentId, employeeId, department, course, year } = credentials;
 
     try {
       switch (userType) {

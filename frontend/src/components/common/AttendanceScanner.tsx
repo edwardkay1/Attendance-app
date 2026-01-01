@@ -1,6 +1,16 @@
 import { useState } from 'react';
 import QRScanner from '../common/QRScanner';
-import Button from './Button';
+import { 
+  X, 
+  Info, 
+  QrCode, 
+  CheckCircle2, 
+  XCircle, 
+  RefreshCcw, 
+  Camera, 
+  CameraOff,
+  Loader2
+} from 'lucide-react';
 import { validateQRCode, parseQRCode } from '../../data/mockStudentData';
 
 interface AttendanceScannerProps {
@@ -9,7 +19,7 @@ interface AttendanceScannerProps {
 }
 
 export default function AttendanceScanner({ onAttendanceMarked, onClose }: AttendanceScannerProps) {
-  const [isScanning, setIsScanning] = useState(false);
+  const [isScanning, setIsScanning] = useState(true); // Start scanning immediately
   const [scanResult, setScanResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -20,164 +30,171 @@ export default function AttendanceScanner({ onAttendanceMarked, onClose }: Atten
     setIsProcessing(true);
 
     try {
-      // Simulate processing the QR code data
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Simulate network delay for UMU backend validation
+      await new Promise(resolve => setTimeout(resolve, 1200));
 
-      // Validate QR code format
       if (validateQRCode(result)) {
-        parseQRCode(result); // Validate and parse (we don't need the result here)
+        parseQRCode(result);
         onAttendanceMarked(result);
         setError(null);
       } else {
-        setError('Invalid QR code. Please scan a valid attendance QR code from your lecturer.');
+        setError('Invalid QR code. Please scan the official code displayed by your lecturer.');
       }
     } catch (err) {
-      setError('Failed to process attendance. Please try again.');
+      setError('Technical error. Please try again or check your internet.');
     } finally {
       setIsProcessing(false);
     }
   };
 
-  const handleError = (errorMessage: string) => {
-    setError(errorMessage);
-  };
-
   const resetScanner = () => {
     setScanResult(null);
     setError(null);
-    setIsScanning(false);
+    setIsScanning(true); // Restart scanning automatically
     setIsProcessing(false);
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">Mark Attendance</h2>
-            <button
-              onClick={onClose}
-              className="text-gray-400 transition-colors hover:text-gray-600"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md animate-in fade-in duration-300">
+      <div className="bg-white/80 backdrop-blur-2xl border border-white/40 shadow-[0_32px_64px_-12px_rgba(0,104,56,0.2)] rounded-[32px] max-w-md w-full max-h-[90vh] overflow-y-auto relative">
+        
+        {/* Header */}
+        <div className="sticky top-0 z-10 flex items-center justify-between p-6 border-b border-slate-200/50 bg-white/40 backdrop-blur-sm">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-[#006838] rounded-xl flex items-center justify-center shadow-lg shadow-[#006838]/20">
+              <QrCode className="text-white" size={20} strokeWidth={2.5} />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold tracking-tight text-slate-900">Mark Attendance</h2>
+              <p className="text-[10px] font-bold text-[#F9A825] uppercase tracking-widest">Nkozi Main Campus</p>
+            </div>
           </div>
+          <button
+            onClick={onClose}
+            className="p-2 transition-colors rounded-full hover:bg-slate-100 text-slate-400"
+          >
+            <X size={24} />
+          </button>
+        </div>
 
-          <div className="space-y-6">
-            {/* Instructions */}
-            <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl">
-              <div className="flex items-start space-x-3">
-                <svg className="w-5 h-5 text-blue-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+        <div className="p-6 space-y-6">
+          {/* Liquid Instructions */}
+          {!scanResult && !error && (
+            <div className="p-4 bg-[#F9A825]/10 border border-[#F9A825]/20 rounded-2xl">
+              <div className="flex items-start gap-3">
+                <Info className="text-[#F9A825] shrink-0 mt-0.5" size={18} />
                 <div>
-                  <p className="text-sm font-medium text-blue-900">How to mark attendance:</p>
-                  <ol className="mt-1 space-y-1 text-sm text-blue-800">
-                    <li>1. Click "Start Scanning"</li>
-                    <li>2. Point your camera at the QR code</li>
-                    <li>3. Wait for the code to be recognized</li>
+                  <p className="text-sm font-bold text-slate-800">Camera is active!</p>
+                  <ol className="mt-1 space-y-1 text-xs font-medium text-slate-600">
+                    <li className="flex items-center gap-2">1. Point camera at lecturer's screen</li>
+                    <li className="flex items-center gap-2">2. Ensure lighting is sufficient</li>
+                    <li className="flex items-center gap-2">3. Keep phone steady for 1 second</li>
                   </ol>
                 </div>
               </div>
             </div>
+          )}
 
-            {/* QR Scanner */}
-            <div className="flex justify-center">
-              <QRScanner
-                onScan={handleScan}
-                onError={handleError}
-                isActive={isScanning}
-              />
-            </div>
+          {/* Scanner Viewport */}
+          <div className="relative rounded-[24px] overflow-hidden bg-slate-900 aspect-square shadow-inner group">
+            <QRScanner
+              onScan={handleScan}
+              onError={(msg) => setError(msg)}
+              isActive={isScanning}
+            />
+            
+            {/* Liquid Overlay when not scanning */}
+            {!isScanning && !scanResult && !isProcessing && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-white bg-slate-900/60 backdrop-blur-sm">
+                <Camera className="mb-3 opacity-50" size={48} />
+                <p className="text-sm font-semibold opacity-70">Camera paused</p>
+              </div>
+            )}
 
-            {/* Status Messages */}
+            {/* Scanning Animation */}
+            {isScanning && (
+              <div className="absolute inset-0 pointer-events-none">
+                <div className="w-full h-1 bg-[#006838] absolute top-0 shadow-[0_0_15px_#006838] animate-scan-line" />
+              </div>
+            )}
+          </div>
+
+          {/* Dynamic Feedback States */}
+          <div className="space-y-4">
             {error && (
-              <div className="p-4 border border-red-200 bg-red-50 rounded-xl">
-                <div className="flex items-center space-x-2">
-                  <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <p className="text-sm text-red-800">{error}</p>
-                </div>
+              <div className="flex items-center gap-3 p-4 border border-red-100 bg-red-50 rounded-2xl animate-in zoom-in-95">
+                <XCircle className="text-red-600 shrink-0" size={24} />
+                <p className="text-sm font-semibold leading-tight text-red-900">{error}</p>
               </div>
             )}
 
             {scanResult && !error && (
-              <div className="p-4 border border-green-200 bg-green-50 rounded-xl">
-                <div className="flex items-center space-x-2">
-                  <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <div>
-                    <p className="text-sm font-medium text-green-800">QR Code Scanned Successfully!</p>
-                    <p className="mt-1 text-xs text-green-700">Processing attendance...</p>
-                  </div>
+              <div className="flex items-center gap-3 p-4 bg-[#006838]/10 border border-[#006838]/20 rounded-2xl animate-in slide-in-from-bottom-2">
+                <div className="w-10 h-10 bg-[#006838] rounded-full flex items-center justify-center shrink-0">
+                  <CheckCircle2 className="text-white" size={24} />
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-slate-900">Success!</p>
+                  <p className="text-xs font-medium text-slate-600">Attendance data transmitted to portal.</p>
                 </div>
               </div>
             )}
 
-            {/* Action Buttons */}
-            <div className="flex space-x-3">
-              {!isScanning && !scanResult && (
-                <Button
-                  onClick={() => setIsScanning(true)}
-                  className="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
-                >
-                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                  </svg>
-                  Start Scanning
-                </Button>
-              )}
-
-              {isScanning && (
-                <Button
-                  onClick={() => setIsScanning(false)}
-                  variant="secondary"
-                  className="flex-1"
-                >
-                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 10h6m-6 4h6m-6 4h4" />
-                  </svg>
-                  Stop Scanning
-                </Button>
-              )}
-
-              {(scanResult || error) && (
-                <Button
-                  onClick={resetScanner}
-                  variant="secondary"
-                  className="flex-1"
-                >
-                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                  </svg>
-                  Scan Again
-                </Button>
-              )}
-
-              <Button
-                onClick={onClose}
-                variant="secondary"
-                className="px-6"
-              >
-                Close
-              </Button>
-            </div>
-
-            {/* Processing Indicator */}
             {isProcessing && (
-              <div className="flex items-center justify-center py-4">
-                <div className="w-8 h-8 border-b-2 border-green-600 rounded-full animate-spin"></div>
-                <span className="ml-3 text-gray-600">Processing attendance...</span>
+              <div className="flex flex-col items-center justify-center gap-3 py-6">
+                <Loader2 className="animate-spin text-[#006838]" size={32} />
+                <span className="text-sm font-bold tracking-wide uppercase text-slate-500">Validating Session...</span>
               </div>
             )}
           </div>
+
+          {/* Action Footer */}
+          <div className="flex flex-col gap-3">
+            {!scanResult && !isProcessing && (
+              <button
+                onClick={() => setIsScanning(!isScanning)}
+                className={`w-full py-4 rounded-[20px] font-bold shadow-lg flex items-center justify-center gap-2 transition-transform active:scale-95 ${
+                  isScanning 
+                    ? 'bg-slate-100 text-slate-600 shadow-slate-100/20' 
+                    : 'bg-[#006838] text-white shadow-[#006838]/20'
+                }`}
+              >
+                {isScanning ? <CameraOff size={20} /> : <Camera size={20} />}
+                {isScanning ? 'Pause Scanning' : 'Resume Scanning'}
+              </button>
+            )}
+
+            {(scanResult || error) && (
+              <button
+                onClick={resetScanner}
+                className="w-full py-4 bg-white border border-slate-200 text-slate-700 rounded-[20px] font-bold flex items-center justify-center gap-2 hover:bg-slate-50 shadow-sm"
+              >
+                <RefreshCcw size={20} />
+                Scan Again
+              </button>
+            )}
+            
+            <button
+              onClick={onClose}
+              className="w-full py-3 text-sm font-bold transition-colors text-slate-400 hover:text-slate-600"
+            >
+              Close Window
+            </button>
+          </div>
         </div>
       </div>
+      
+      {/* Custom Keyframe for scanning line (Add to your global CSS or Tailwind config) */}
+      <style>{`
+        @keyframes scan-line {
+          0% { top: 0%; opacity: 0; }
+          50% { opacity: 1; }
+          100% { top: 100%; opacity: 0; }
+        }
+        .animate-scan-line {
+          animation: scan-line 2s linear infinite;
+        }
+      `}</style>
     </div>
   );
 }

@@ -1,31 +1,33 @@
+import { useState } from 'react';
+import { 
+  User, BookOpen, Zap, Calendar, 
+  MapPin, Clock, ChevronRight, 
+  AlertCircle, LayoutDashboard, History
+} from 'lucide-react';
 import PageWrapper from "../../components/layout/lecturer/PageWrapper";
 import QRCodeGenerator from "../../components/common/QRCodeGenerator";
-import { getLecturerById, getCoursesByLecturerId, getActiveQRSessions, type QRCodeSession } from "../../data/mockLecturerData";
+import { getCoursesByLecturerId, getActiveQRSessions, type QRCodeSession } from "../../data/mockLecturerData";
 import { getCurrentLecturer } from "../../data/authService";
-import { useState } from "react";
 
 export default function LecturerDashboard() {
-  // Get the current authenticated lecturer
   const currentLecturer = getCurrentLecturer();
   const courses = currentLecturer ? getCoursesByLecturerId(currentLecturer.id) : [];
   const activeSessions = getActiveQRSessions();
-
   const [recentSessions, setRecentSessions] = useState<QRCodeSession[]>([]);
 
   const handleQRGenerated = (session: QRCodeSession) => {
-    setRecentSessions(prev => [session, ...prev.slice(0, 4)]); // Keep last 5 sessions
+    setRecentSessions(prev => [session, ...prev.slice(0, 4)]);
   };
 
   if (!currentLecturer) {
     return (
       <PageWrapper>
-        <div className="py-12 text-center">
-          <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-red-400 to-pink-500">
-            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-            </svg>
+        <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
+          <div className="flex items-center justify-center w-20 h-20 mb-6 text-red-500 shadow-xl bg-red-50 rounded-3xl shadow-red-500/10">
+            <AlertCircle size={40} />
           </div>
-          <p className="text-lg text-gray-600">Lecturer data not found</p>
+          <h2 className="text-2xl font-black text-slate-900">Lecturer Identity Lost</h2>
+          <p className="mt-2 font-medium text-slate-500">Please re-authenticate to access the academic portal.</p>
         </div>
       </PageWrapper>
     );
@@ -33,164 +35,137 @@ export default function LecturerDashboard() {
 
   return (
     <PageWrapper>
-      <div className="space-y-8">
-        {/* Header Section */}
-        <div className="p-8 text-white shadow-xl bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-700 rounded-2xl">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="mb-2 text-4xl font-bold">Welcome back, {currentLecturer.name.split(' ')[1]}! 👨‍🏫</h1>
-              <p className="text-lg text-purple-100">Manage your classes and attendance sessions</p>
-              <div className="flex items-center mt-4 space-x-4">
-                <span className="px-3 py-1 text-sm rounded-full bg-white/20 backdrop-blur-sm">
-                  {currentLecturer.employeeId}
-                </span>
-                <span className="px-3 py-1 text-sm rounded-full bg-white/20 backdrop-blur-sm">
-                  {currentLecturer.department}
-                </span>
-                <span className="px-3 py-1 text-sm rounded-full bg-white/20 backdrop-blur-sm">
-                  {courses.length} Courses
-                </span>
+      <div className="pb-20 mx-auto space-y-10 max-w-7xl">
+        
+        {/* 1. Immersive Hero Section */}
+        <div className="relative overflow-hidden bg-[#006838] rounded-[40px] p-8 md:p-12 shadow-2xl shadow-[#006838]/20 group">
+          {/* Animated Background Elements */}
+          <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-[100px] -mr-48 -mt-48 transition-transform group-hover:scale-110 duration-700" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#F9A825]/20 rounded-full blur-[80px] -ml-32 -mb-32" />
+
+          <div className="relative flex flex-col items-center justify-between gap-8 md:flex-row">
+            <div className="text-center md:text-left">
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 backdrop-blur-md rounded-full text-white/80 text-[10px] font-black uppercase tracking-widest mb-4">
+                <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
+                Academic Session Active
+              </div>
+              <h1 className="mb-4 text-4xl font-black tracking-tight text-white md:text-5xl">
+                Hello, Prof. {currentLecturer.name.split(' ')[1]}
+              </h1>
+              <div className="flex flex-wrap justify-center gap-3 md:justify-start">
+                {[
+                  { icon: User, text: currentLecturer.employeeId },
+                  { icon: LayoutDashboard, text: currentLecturer.department },
+                  { icon: BookOpen, text: `${courses.length} Active Courses` }
+                ].map((tag, i) => (
+                  <span key={i} className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-white border bg-white/10 backdrop-blur-lg rounded-2xl border-white/10">
+                    <tag.icon size={14} className="text-[#F9A825]" />
+                    {tag.text}
+                  </span>
+                ))}
               </div>
             </div>
-            <div className="hidden md:block">
-              <div className="flex items-center justify-center w-20 h-20 rounded-full bg-white/20 backdrop-blur-sm">
-                <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-              </div>
+            
+            <div className="w-32 h-32 bg-white/10 backdrop-blur-2xl rounded-[40px] border border-white/20 flex items-center justify-center shadow-inner group-hover:rotate-3 transition-transform">
+               <User size={64} className="text-white/20" />
             </div>
           </div>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          <div className="p-6 text-white transition-all duration-300 transform shadow-lg bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl hover:shadow-xl hover:-translate-y-1">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-blue-100">Total Courses</p>
-                <p className="mt-1 text-3xl font-bold">{courses.length}</p>
+        {/* 2. Quick Vitals Grid */}
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
+          {[
+            { label: 'Managed Modules', val: courses.length, icon: BookOpen, color: 'text-blue-600', bg: 'bg-blue-50' },
+            { label: 'Active QR Streams', val: activeSessions.length, icon: Zap, color: 'text-[#006838]', bg: 'bg-green-50' },
+            { label: 'Scheduled Today', val: courses.reduce((t, c) => t + c.schedule.length, 0), icon: Calendar, color: 'text-purple-600', bg: 'bg-purple-50' },
+          ].map((stat, i) => (
+            <div key={i} className="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm flex items-center gap-5 transition-transform hover:scale-[1.02]">
+              <div className={`w-14 h-14 ${stat.bg} ${stat.color} rounded-2xl flex items-center justify-center shadow-inner`}>
+                <stat.icon size={24} />
               </div>
-              <div className="flex items-center justify-center w-12 h-12 bg-white/20 rounded-xl">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                </svg>
+              <div>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{stat.label}</p>
+                <p className="text-2xl font-black text-slate-900">{stat.val}</p>
               </div>
             </div>
-          </div>
-
-          <div className="p-6 text-white transition-all duration-300 transform shadow-lg bg-gradient-to-br from-green-500 to-green-600 rounded-2xl hover:shadow-xl hover:-translate-y-1">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-green-100">Active Sessions</p>
-                <p className="mt-1 text-3xl font-bold">{activeSessions.length}</p>
-              </div>
-              <div className="flex items-center justify-center w-12 h-12 bg-white/20 rounded-xl">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-            </div>
-          </div>
-
-          <div className="p-6 text-white transition-all duration-300 transform shadow-lg bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl hover:shadow-xl hover:-translate-y-1">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-purple-100">Today's Classes</p>
-                <p className="mt-1 text-3xl font-bold">
-                  {courses.reduce((total, course) => total + course.schedule.length, 0)}
-                </p>
-              </div>
-              <div className="flex items-center justify-center w-12 h-12 bg-white/20 rounded-xl">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
 
-        {/* QR Code Generator */}
-        <QRCodeGenerator
-          lecturerId={currentLecturer.id}
-          onQRGenerated={handleQRGenerated}
-        />
+        {/* 3. The Generator Engine */}
+        <div className="relative">
+          <div className="absolute -left-4 top-1/2 -translate-y-1/2 w-1 h-20 bg-[#006838] rounded-full hidden lg:block" />
+          <QRCodeGenerator
+            lecturerId={currentLecturer.id}
+            onQRGenerated={handleQRGenerated}
+          />
+        </div>
 
-        {/* Recent Sessions */}
-        {recentSessions.length > 0 && (
-          <div className="overflow-hidden bg-white shadow-lg rounded-2xl">
-            <div className="p-6 border-b border-gray-200">
-              <div className="flex items-center justify-between">
-                <h3 className="text-2xl font-bold text-gray-900">Recent QR Sessions</h3>
-                <span className="px-3 py-1 text-sm text-gray-500 bg-gray-100 rounded-full">
-                  Last {recentSessions.length} sessions
-                </span>
-              </div>
+        {/* 4. Data Streams: Recent Sessions & Courses */}
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
+          
+          {/* Recent QR Activity */}
+          <div className="bg-white rounded-[40px] border border-slate-100 shadow-sm overflow-hidden">
+            <div className="flex items-center justify-between p-8 border-b border-slate-50">
+              <h3 className="flex items-center gap-3 text-xl font-black text-slate-900">
+                <History className="text-[#006838]" size={24} /> Stream History
+              </h3>
             </div>
-            <div className="divide-y divide-gray-200">
-              {recentSessions.map((session) => (
-                <div key={session.id} className="p-6 transition-colors hover:bg-gray-50">
+            <div className="divide-y divide-slate-50">
+              {recentSessions.length > 0 ? recentSessions.map((session) => (
+                <div key={session.id} className="p-6 transition-colors hover:bg-slate-50 group">
                   <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-3">
-                        <div className={`w-3 h-3 rounded-full ${session.isActive ? 'bg-green-500' : 'bg-gray-400'}`}></div>
-                        <div>
-                          <h4 className="font-semibold text-gray-900">{session.courseName}</h4>
-                          <p className="text-sm text-gray-600">
-                            {new Date(session.date).toLocaleDateString()} • {session.time} • {session.location}
-                          </p>
-                        </div>
+                    <div className="flex items-center gap-4">
+                      <div className={`w-3 h-3 rounded-full ${session.isActive ? 'bg-green-500 animate-pulse' : 'bg-slate-300'}`} />
+                      <div>
+                        <h4 className="font-black text-slate-900 group-hover:text-[#006838] transition-colors">{session.courseName}</h4>
+                        <p className="flex items-center gap-2 mt-1 text-xs font-bold tracking-tighter uppercase text-slate-400">
+                          <MapPin size={10} /> {session.location} • <Clock size={10} /> {session.time}
+                        </p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        session.isActive
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-gray-100 text-gray-800'
-                      }`}>
-                        {session.isActive ? 'Active' : 'Expired'}
-                      </span>
-                      <p className="mt-1 text-xs text-gray-500">
-                        Created: {new Date(session.createdAt).toLocaleTimeString()}
-                      </p>
+                      <div className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full ${session.isActive ? 'bg-green-50 text-green-600' : 'bg-slate-100 text-slate-400'}`}>
+                        {session.isActive ? 'Live' : 'Expired'}
+                      </div>
+                      <p className="text-[10px] font-bold text-slate-300 mt-2">{new Date(session.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
                     </div>
                   </div>
                 </div>
-              ))}
+              )) : (
+                <div className="p-12 font-medium text-center text-slate-400">No recent sessions found.</div>
+              )}
             </div>
           </div>
-        )}
 
-        {/* My Courses */}
-        <div className="overflow-hidden bg-white shadow-lg rounded-2xl">
-          <div className="p-6 border-b border-gray-200">
-            <h3 className="text-2xl font-bold text-gray-900">My Courses</h3>
-          </div>
-          <div className="divide-y divide-gray-200">
-            {courses.map((course) => (
-              <div key={course.id} className="p-6">
-                <div className="flex items-center justify-between">
+          {/* Module Registry */}
+          <div className="bg-white rounded-[40px] border border-slate-100 shadow-sm overflow-hidden">
+            <div className="flex items-center justify-between p-8 border-b border-slate-50">
+              <h3 className="flex items-center gap-3 text-xl font-black text-slate-900">
+                <BookOpen className="text-[#F9A825]" size={24} /> My Modules
+              </h3>
+            </div>
+            <div className="divide-y divide-slate-50">
+              {courses.map((course) => (
+                <div key={course.id} className="flex items-center justify-between p-6 transition-all cursor-pointer group hover:bg-slate-50">
                   <div>
-                    <h4 className="font-semibold text-gray-900">{course.name}</h4>
-                    <p className="text-sm text-gray-600">{course.code} • {course.department}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium text-gray-900">{course.schedule.length} classes/week</p>
-                    <div className="flex flex-wrap gap-1 mt-1">
-                      {course.schedule.map((schedule) => (
-                        <span key={schedule.id} className="px-2 py-1 text-xs text-blue-800 bg-blue-100 rounded">
-                          {schedule.day} {schedule.time}
+                    <span className="text-[9px] font-black text-[#F9A825] uppercase tracking-[0.2em]">{course.code}</span>
+                    <h4 className="text-base font-black text-slate-900 group-hover:text-[#006838] transition-colors">{course.name}</h4>
+                    <div className="flex gap-1.5 mt-3">
+                      {course.schedule.map((s) => (
+                        <span key={s.id} className="px-2.5 py-1 bg-slate-100 text-[9px] font-black text-slate-500 rounded-lg uppercase">
+                          {s.day.slice(0,3)} {s.time}
                         </span>
                       ))}
                     </div>
                   </div>
+                  <ChevronRight size={20} className="transition-colors text-slate-200 group-hover:text-slate-900" />
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
+
         </div>
       </div>
     </PageWrapper>
   );
 }
-
-

@@ -8,10 +8,10 @@ export const mockLecturers: Lecturer[] = [
   {
     id: 'LEC001',
     name: 'Dr. Sarah Johnson',
-    email: 'sarah.johnson@university.edu',
+    email: 'sarah.johnson@umu.ac.ug',
     department: 'Computer Science',
     employeeId: 'EMP001',
-    facultyId: 'engineering',
+    facultyId: 'science',
     courses: ['CS101', 'CS201'],
     isApproved: true,
     createdAt: '2024-01-15T10:00:00Z'
@@ -19,7 +19,7 @@ export const mockLecturers: Lecturer[] = [
   {
     id: 'LEC002',
     name: 'Prof. Michael Chen',
-    email: 'michael.chen@university.edu',
+    email: 'michael.chen@umu.ac.ug',
     department: 'Mathematics',
     employeeId: 'EMP002',
     facultyId: 'science',
@@ -30,7 +30,7 @@ export const mockLecturers: Lecturer[] = [
   {
     id: 'LEC003',
     name: 'Dr. Emily Rodriguez',
-    email: 'emily.rodriguez@university.edu',
+    email: 'emily.rodriguez@umu.ac.ug',
     department: 'Physics',
     employeeId: 'EMP003',
     facultyId: 'science',
@@ -46,7 +46,7 @@ export const mockCourses: Course[] = [
     name: 'Introduction to Programming',
     code: 'CS101',
     department: 'Computer Science',
-    facultyId: 'engineering',
+    facultyId: 'science',
     lecturerId: 'LEC001',
     schedule: [
       {

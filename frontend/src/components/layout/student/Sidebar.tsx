@@ -1,4 +1,10 @@
 import { Link, useLocation } from "react-router-dom";
+import { 
+  LayoutDashboard, 
+  UserCheck, 
+  ChevronLeft, 
+  ShieldCheck 
+} from "lucide-react";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -9,91 +15,111 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const location = useLocation();
 
   const menuItems = [
-    { path: "/student/dashboard", label: "Dashboard", icon: "📊", color: "text-blue-400" },
-    { path: "/student/attendance", label: "Attendance", icon: "📝", color: "text-green-400" },
+    { path: "/student/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { path: "/student/attendance", label: "My Attendance", icon: UserCheck },
   ];
 
   return (
-    <div
-      className={`fixed left-0 top-0 h-full bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 text-white transition-all duration-300 ease-in-out z-50 shadow-2xl ${
-        isOpen ? "w-64" : "w-16"
-      }`}
-    >
-      {/* Header */}
-      <div className="flex items-center justify-between p-6 border-b border-slate-700/50">
-        {isOpen && (
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">A</span>
+    <>
+      {/* Liquid Mobile Overlay */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 z-40 transition-opacity duration-300 bg-slate-900/20 backdrop-blur-sm lg:hidden"
+          onClick={onToggle}
+        />
+      )}
+
+      <aside
+        className={`fixed left-0 top-0 h-full bg-white/70 backdrop-blur-2xl border-r border-white/40 transition-all duration-500 ease-out z-[60] shadow-[20px_0_40px_rgba(0,0,0,0.02)] lg:translate-x-0 lg:static ${
+          isOpen ? "w-72" : "w-20"
+        } ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
+      >
+      {/* 1. Header with Branding */}
+      <div className="flex items-center justify-between h-20 px-6 border-b border-slate-200/50">
+        {isOpen ? (
+          <div className="flex items-center gap-3 duration-500 animate-in fade-in">
+            <div className="w-9 h-9 bg-[#006838] rounded-xl flex items-center justify-center shadow-lg shadow-[#006838]/20">
+              <ShieldCheck className="text-white" size={20} strokeWidth={2.5} />
             </div>
-            <h2 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-              Attendance
-            </h2>
+            <div>
+              <h2 className="text-lg font-black leading-none tracking-tight text-slate-900">Present</h2>
+              <span className="text-[10px] font-bold text-[#F9A825] uppercase tracking-[0.2em]">Student</span>
+            </div>
+          </div>
+        ) : (
+          <div className="w-full flex justify-center text-[#006838]">
+            <ShieldCheck size={24} strokeWidth={2.5} />
           </div>
         )}
-        <button
-          onClick={onToggle}
-          className="p-2 rounded-lg hover:bg-slate-700/50 transition-all duration-200 group"
-        >
-          <svg
-            className={`w-5 h-5 transition-transform duration-200 ${isOpen ? 'rotate-0' : 'rotate-180'}`}
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
       </div>
 
-      {/* Menu Items */}
-      <nav className="mt-8 px-3">
+      {/* 2. Floating Toggle Button */}
+      <button
+        onClick={onToggle}
+        className="absolute -right-3.5 top-24 bg-white border border-slate-200 rounded-full p-1.5 shadow-md hover:shadow-lg hover:scale-110 transition-all duration-300 text-slate-400 hover:text-[#006838]"
+      >
+        <ChevronLeft size={14} className={`transition-transform duration-500 ${!isOpen ? 'rotate-180' : ''}`} />
+      </button>
+
+      {/* 3. Navigation Menu */}
+      <nav className="px-4 mt-8">
         <ul className="space-y-2">
-          {menuItems.map((item) => (
-            <li key={item.path}>
-              <Link
-                to={item.path}
-                className={`group flex items-center px-4 py-3 rounded-xl transition-all duration-200 ${
-                  location.pathname === item.path
-                    ? "bg-gradient-to-r from-blue-600/20 to-purple-600/20 border-r-4 border-blue-400 shadow-lg"
-                    : "hover:bg-slate-700/30 hover:shadow-md"
-                }`}
-              >
-                <span className={`text-xl mr-3 transition-colors duration-200 ${item.color} group-hover:scale-110`}>
-                  {item.icon}
-                </span>
-                {isOpen && (
-                  <span className={`font-medium transition-all duration-200 ${
-                    location.pathname === item.path ? "text-white" : "text-slate-300 group-hover:text-white"
-                  }`}>
-                    {item.label}
-                  </span>
-                )}
-                {location.pathname === item.path && isOpen && (
-                  <div className="ml-auto w-2 h-2 bg-blue-400 rounded-full animate-pulse" />
-                )}
-              </Link>
-            </li>
-          ))}
+          {menuItems.map((item) => {
+            const isActive = location.pathname === item.path;
+            const Icon = item.icon;
+
+            return (
+              <li key={item.path}>
+                <Link
+                  to={item.path}
+                  onClick={() => window.innerWidth < 1024 && onToggle()}
+                  className={`group flex items-center rounded-2xl transition-all duration-300 h-12 ${
+                    isActive
+                      ? "bg-[#006838] text-white shadow-lg shadow-[#006838]/20"
+                      : "text-slate-500 hover:bg-slate-100 hover:text-slate-900"
+                  } ${isOpen ? "px-4" : "justify-center px-0"}`}
+                >
+                  <Icon 
+                    size={20} 
+                    className={`shrink-0 transition-transform duration-300 ${isActive ? "text-white" : "text-slate-400 group-hover:text-[#006838] group-hover:scale-110"}`} 
+                    strokeWidth={isActive ? 2.5 : 2}
+                  />
+                  
+                  {isOpen && (
+                    <span className="ml-3 text-sm font-bold tracking-wide animate-in slide-in-from-left-2">
+                      {item.label}
+                    </span>
+                  )}
+
+                  {isActive && isOpen && (
+                    <div className="ml-auto w-1.5 h-1.5 bg-white/80 rounded-full shadow-[0_0_8px_white]" />
+                  )}
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       </nav>
 
-      {/* Bottom Section */}
-      {isOpen && (
-        <div className="absolute bottom-6 left-6 right-6">
-          <div className="bg-gradient-to-r from-blue-600/10 to-purple-600/10 rounded-xl p-4 border border-slate-700/50">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold">S</span>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-white">Student Portal</p>
-                <p className="text-xs text-slate-400">v1.0.0</p>
-              </div>
+      {/* 4. Bottom Identity Card */}
+      <div className="absolute left-0 right-0 px-4 bottom-6">
+        <div className={`
+          bg-white/50 border border-white/80 p-4 rounded-[24px] shadow-sm 
+          transition-all duration-500 
+          ${!isOpen ? "opacity-0 translate-y-4 pointer-events-none" : "opacity-100 translate-y-0"}
+        `}>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center justify-center w-10 h-10 font-bold border-2 border-white rounded-full bg-slate-100 text-slate-500">
+              S
+            </div>
+            <div>
+              <p className="text-xs font-black truncate text-slate-900">UMU Student</p>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Verified Session</p>
             </div>
           </div>
         </div>
-      )}
-    </div>
+      </div>
+    </aside>
+    </>
   );
 }

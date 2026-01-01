@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState } from 'react';
 import QrScanner from 'qr-scanner';
+import { CameraOff, Focus, ShieldAlert } from 'lucide-react';
 
 interface QRScannerProps {
   onScan: (result: string) => void;
@@ -22,7 +23,6 @@ export default function QRScanner({ onScan, onError, isActive }: QRScannerProps)
       },
       {
         onDecodeError: (error) => {
-          // Only log errors if they're not "No QR code found" to avoid spam
           const errorMessage = error instanceof Error ? error.message : String(error);
           if (!errorMessage.includes('No QR code found')) {
             console.error('QR Scanner error:', error);
@@ -35,8 +35,6 @@ export default function QRScanner({ onScan, onError, isActive }: QRScannerProps)
     );
 
     setScanner(qrScanner);
-
-    // Check if camera is available
     QrScanner.hasCamera().then(setHasCamera);
 
     return () => {
@@ -60,42 +58,78 @@ export default function QRScanner({ onScan, onError, isActive }: QRScannerProps)
 
   if (!hasCamera) {
     return (
-      <div className="py-8 text-center">
-        <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-red-400 to-pink-500">
-          <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-          </svg>
+      <div className="py-12 px-6 text-center bg-white/40 backdrop-blur-xl rounded-[32px] border border-red-100 animate-in fade-in zoom-in-95">
+        <div className="flex items-center justify-center w-16 h-16 mx-auto mb-6 text-red-500 shadow-inner bg-red-50 rounded-2xl">
+          <ShieldAlert size={32} />
         </div>
-        <p className="text-lg font-medium text-gray-600">Camera not available</p>
-        <p className="mt-2 text-sm text-gray-500">Please check your camera permissions and try again.</p>
+        <h3 className="text-lg font-bold tracking-tight text-slate-900">Camera Unavailable</h3>
+        <p className="mt-2 text-sm font-medium leading-relaxed text-slate-500">
+          UMU Present requires camera access to scan attendance. Please update your browser permissions.
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="relative">
+    <div className="relative group overflow-hidden rounded-[28px] bg-slate-950 aspect-square sm:aspect-video flex items-center justify-center shadow-2xl">
+      {/* The Video Feed */}
       <video
         ref={videoRef}
-        className="w-full max-w-md mx-auto shadow-lg rounded-2xl"
-        style={{ transform: 'scaleX(-1)' }} // Mirror the video for natural feel
+        className="object-cover w-full h-full transition-transform duration-700"
+        style={{ transform: 'scaleX(-1)' }} 
       />
+
+      {/* Modern UI Overlay - Active State */}
       {isActive && (
-        <div className="absolute inset-0 border-2 border-green-400 pointer-events-none rounded-2xl">
-          <div className="absolute transform -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
-            <div className="w-48 h-48 border-2 border-green-400 rounded-lg opacity-50"></div>
+        <>
+          {/* Liquid Scan Line Overlay */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="w-full h-[2px] bg-gradient-to-r from-transparent via-[#006838] to-transparent shadow-[0_0_15px_#006838] absolute top-0 animate-scan-move" />
           </div>
-        </div>
+
+          {/* High-Tech Targeting Corners */}
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="relative w-48 h-48 border-2 sm:w-64 sm:h-64 border-white/20 rounded-3xl">
+              {/* Corner L-Shapes */}
+              <div className="absolute -top-1 -left-1 w-6 h-6 border-t-4 border-l-4 border-[#F9A825] rounded-tl-lg" />
+              <div className="absolute -top-1 -right-1 w-6 h-6 border-t-4 border-r-4 border-[#F9A825] rounded-tr-lg" />
+              <div className="absolute -bottom-1 -left-1 w-6 h-6 border-b-4 border-l-4 border-[#F9A825] rounded-bl-lg" />
+              <div className="absolute -bottom-1 -right-1 w-6 h-6 border-b-4 border-r-4 border-[#F9A825] rounded-br-lg" />
+              
+              <div className="absolute inset-0 flex items-center justify-center opacity-40">
+                <Focus className="text-white" size={40} strokeWidth={1} />
+              </div>
+            </div>
+          </div>
+          
+          <div className="absolute flex items-center gap-2 px-4 py-2 -translate-x-1/2 border rounded-full bottom-4 left-1/2 bg-black/40 backdrop-blur-md border-white/10">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+            <span className="text-[10px] font-bold text-white uppercase tracking-widest">Live Scanner</span>
+          </div>
+        </>
       )}
+
+      {/* Paused State Overlay */}
       {!isActive && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-2xl">
-          <div className="text-center text-white">
-            <svg className="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-            </svg>
-            <p className="text-sm">Scanner paused</p>
+        <div className="absolute inset-0 flex flex-col items-center justify-center duration-300 bg-slate-900/80 backdrop-blur-sm animate-in fade-in">
+          <div className="flex items-center justify-center mb-3 rounded-full w-14 h-14 bg-white/10 text-white/50">
+            <CameraOff size={28} />
           </div>
+          <p className="text-sm font-bold tracking-widest uppercase text-white/70">Scanner Paused</p>
         </div>
       )}
+
+      <style>{`
+        @keyframes scan-move {
+          0% { top: 0%; opacity: 0; }
+          15% { opacity: 1; }
+          85% { opacity: 1; }
+          100% { top: 100%; opacity: 0; }
+        }
+        .animate-scan-move {
+          animation: scan-move 3s ease-in-out infinite;
+        }
+      `}</style>
     </div>
   );
 }

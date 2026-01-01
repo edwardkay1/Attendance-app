@@ -1,5 +1,21 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { 
+  UserPlus, 
+  GraduationCap, 
+  School, 
+  Hash, 
+  Book, 
+  Building2, 
+  Mail, 
+  Lock, 
+  Eye, 
+  EyeOff, 
+  Loader2, 
+  AlertCircle,
+  ChevronRight,
+  User
+} from 'lucide-react';
 import { AuthService, type UserType } from '../data/authService';
 
 interface RegisterFormData {
@@ -18,16 +34,9 @@ interface RegisterFormData {
 const Register: React.FC = () => {
   const [userType, setUserType] = useState<UserType>('student');
   const [formData, setFormData] = useState<RegisterFormData>({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    facultyId: '',
-    studentId: '',
-    employeeId: '',
-    department: '',
-    course: '',
-    year: 1,
+    name: '', email: '', password: '', confirmPassword: '',
+    facultyId: '', studentId: '', employeeId: '',
+    department: '', course: '', year: 1,
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -48,344 +57,174 @@ const Register: React.FC = () => {
     setIsLoading(true);
     setError('');
 
-    // Validation
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
       setIsLoading(false);
       return;
     }
 
-    if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters long');
-      setIsLoading(false);
-      return;
-    }
-
     try {
-      // Register the user (this will be handled by AuthService)
-      const success = AuthService.register({
-        ...formData,
-        userType,
-      });
-
+      const success = AuthService.register({ ...formData, userType });
       if (success) {
-        alert('Registration successful! Please wait for faculty admin approval before logging in.');
+        alert('Registration successful! Awaiting Faculty Admin approval.');
         navigate('/login');
       } else {
-        setError('Registration failed. Please try again.');
+        setError('Registration failed. Email might already be in use.');
       }
     } catch (err) {
-      setError('An error occurred during registration. Please try again.');
+      setError('An error occurred. Please check your connection.');
     } finally {
       setIsLoading(false);
     }
   };
 
+  const inputStyle = "w-full pl-11 pr-4 py-3 bg-white/50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-[#006838]/5 focus:border-[#006838] transition-all placeholder:text-slate-400 text-sm";
+  const iconStyle = "absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#006838] transition-colors";
+
   return (
-    <div className="flex items-center justify-center min-h-screen px-4 py-12 bg-gradient-to-br from-blue-50 via-white to-purple-50 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md space-y-8">
-        <div className="text-center">
-          <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-blue-600 to-purple-600">
-            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-            </svg>
-          </div>
-          <h2 className="text-3xl font-bold text-gray-900">Join Present</h2>
-          <p className="mt-2 text-sm text-gray-600">Create your account to get started</p>
-        </div>
+    <div className="relative min-h-screen flex items-center justify-center p-4 bg-[#f8faf8] overflow-x-hidden">
+      {/* Liquid UI Background Blobs */}
+      <div className="absolute top-[-5%] right-[-10%] w-[500px] h-[500px] bg-[#006838]/10 rounded-full blur-[120px] animate-pulse" />
+      <div className="absolute bottom-[-10%] left-[-10%] w-[400px] h-[400px] bg-[#F9A825]/10 rounded-full blur-[100px]" />
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {/* User Type Selection */}
-          <div>
-            <label className="block mb-2 text-sm font-medium text-gray-700">I am registering as a:</label>
-            <div className="grid grid-cols-2 gap-3">
-              {[
-                { value: 'student', label: 'Student', icon: '👨‍🎓' },
-                { value: 'lecturer', label: 'Lecturer', icon: '👨‍🏫' }
-              ].map((type) => (
-                <button
-                  key={type.value}
-                  type="button"
-                  onClick={() => setUserType(type.value as UserType)}
-                  className={`p-3 text-center border rounded-lg transition-all ${
-                    userType === type.value
-                      ? 'border-blue-500 bg-blue-50 text-blue-700'
-                      : 'border-gray-300 hover:border-gray-400'
-                  }`}
-                >
-                  <div className="mb-1 text-2xl">{type.icon}</div>
-                  <div className="text-sm font-medium">{type.label}</div>
-                </button>
-              ))}
+      <div className="relative w-full max-w-[550px] z-10 my-8">
+        <div className="bg-white/40 backdrop-blur-2xl border border-white/40 shadow-2xl rounded-[32px] p-6 lg:p-10">
+          
+          <div className="mb-8 text-center">
+            <div className="mx-auto w-16 h-16 bg-[#006838] rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-[#006838]/20">
+              <UserPlus className="text-white" size={32} />
             </div>
+            <h2 className="text-2xl font-bold tracking-tight text-slate-900">Join UMU Present</h2>
+            <p className="text-sm font-medium text-slate-500">Create your academic account</p>
           </div>
 
-          {/* Faculty Selection */}
-          <div>
-            <label htmlFor="facultyId" className="block text-sm font-medium text-gray-700">
-              Faculty
-            </label>
-            <select
-              id="facultyId"
-              name="facultyId"
-              required
-              value={formData.facultyId}
-              onChange={handleInputChange}
-              className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="">Select Faculty</option>
-              <option value="engineering">Engineering</option>
-              <option value="science">Science</option>
-              <option value="arts">Arts & Humanities</option>
-              <option value="business">Business</option>
-              <option value="medicine">Medicine</option>
-            </select>
-          </div>
+          <form className="space-y-6" onSubmit={handleSubmit}>
+            {/* Role Selection */}
+            <div className="space-y-3">
+              <label className="text-[12px] font-bold text-slate-500 uppercase tracking-widest ml-1">Registering As</label>
+              <div className="grid grid-cols-2 gap-3 p-1.5 bg-slate-200/30 rounded-2xl">
+                {[
+                  { value: 'student', label: 'Student', icon: GraduationCap },
+                  { value: 'lecturer', label: 'Lecturer', icon: School }
+                ].map((type) => (
+                  <button
+                    key={type.value}
+                    type="button"
+                    onClick={() => setUserType(type.value as UserType)}
+                    className={`flex items-center justify-center gap-2 py-3 rounded-xl transition-all duration-300 ${
+                      userType === type.value
+                        ? 'bg-white shadow-md text-[#006838]'
+                        : 'text-slate-500 hover:bg-white/50 opacity-70'
+                    }`}
+                  >
+                    <type.icon size={18} />
+                    <span className="text-sm font-bold">{type.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
 
-          {/* Name Field */}
-          <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-              Full Name
-            </label>
-            <input
-              id="name"
-              name="name"
-              type="text"
-              required
-              value={formData.name}
-              onChange={handleInputChange}
-              className="block w-full px-3 py-2 mt-1 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Enter your full name"
-            />
-          </div>
-
-          {/* Email Field */}
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-              Email Address
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              required
-              value={formData.email}
-              onChange={handleInputChange}
-              className="block w-full px-3 py-2 mt-1 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Enter your email"
-            />
-          </div>
-
-          {/* Student-specific fields */}
-          {userType === 'student' && (
-            <>
-              <div>
-                <label htmlFor="studentId" className="block text-sm font-medium text-gray-700">
-                  Student ID
-                </label>
-                <input
-                  id="studentId"
-                  name="studentId"
-                  type="text"
-                  required
-                  value={formData.studentId}
-                  onChange={handleInputChange}
-                  className="block w-full px-3 py-2 mt-1 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Enter your student ID"
-                />
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              {/* Name */}
+              <div className="relative space-y-1 group">
+                <User className={iconStyle} size={18} />
+                <input name="name" type="text" required value={formData.name} onChange={handleInputChange} className={inputStyle} placeholder="Full Name" />
               </div>
 
-              <div>
-                <label htmlFor="course" className="block text-sm font-medium text-gray-700">
-                  Course/Program
-                </label>
-                <input
-                  id="course"
-                  name="course"
-                  type="text"
-                  required
-                  value={formData.course}
-                  onChange={handleInputChange}
-                  className="block w-full px-3 py-2 mt-1 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="e.g., Computer Science, Mechanical Engineering"
-                />
+              {/* Email */}
+              <div className="relative space-y-1 group">
+                <Mail className={iconStyle} size={18} />
+                <input name="email" type="email" required value={formData.email} onChange={handleInputChange} className={inputStyle} placeholder="Email Address" />
               </div>
 
-              <div>
-                <label htmlFor="year" className="block text-sm font-medium text-gray-700">
-                  Year of Study
-                </label>
-                <select
-                  id="year"
-                  name="year"
-                  required
-                  value={formData.year}
-                  onChange={handleInputChange}
-                  className="block w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value={1}>Year 1</option>
-                  <option value={2}>Year 2</option>
-                  <option value={3}>Year 3</option>
-                  <option value={4}>Year 4</option>
-                  <option value={5}>Year 5</option>
+              {/* Faculty */}
+              <div className="relative space-y-1 group md:col-span-2">
+                <Building2 className={iconStyle} size={18} />
+                <select name="facultyId" required value={formData.facultyId} onChange={handleInputChange} className={`${inputStyle} appearance-none`}>
+                  <option value="">Select Faculty</option>
+                  <option value="engineering">Engineering, Design & Tech</option>
+                  <option value="science">Science</option>
+                  <option value="arts">Arts & Humanities</option>
+                  <option value="business">Business Administration</option>
+                  <option value="medicine">Health Sciences</option>
                 </select>
               </div>
-            </>
-          )}
 
-          {/* Lecturer-specific fields */}
-          {userType === 'lecturer' && (
-            <>
-              <div>
-                <label htmlFor="employeeId" className="block text-sm font-medium text-gray-700">
-                  Employee ID
-                </label>
-                <input
-                  id="employeeId"
-                  name="employeeId"
-                  type="text"
-                  required
-                  value={formData.employeeId}
-                  onChange={handleInputChange}
-                  className="block w-full px-3 py-2 mt-1 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Enter your employee ID"
-                />
+              {/* Dynamic Fields - Student */}
+              {userType === 'student' && (
+                <>
+                  <div className="relative group">
+                    <Hash className={iconStyle} size={18} />
+                    <input name="studentId" type="text" required value={formData.studentId} onChange={handleInputChange} className={inputStyle} placeholder="Student ID" />
+                  </div>
+                  <div className="relative group">
+                    <Book className={iconStyle} size={18} />
+                    <input name="course" type="text" required value={formData.course} onChange={handleInputChange} className={inputStyle} placeholder="Course / Program" />
+                  </div>
+                  <div className="relative group md:col-span-2">
+                    <ChevronRight className={iconStyle} size={18} />
+                    <select name="year" required value={formData.year} onChange={handleInputChange} className={`${inputStyle} appearance-none`}>
+                      {[1, 2, 3, 4, 5].map(y => <option key={y} value={y}>Year {y}</option>)}
+                    </select>
+                  </div>
+                </>
+              )}
+
+              {/* Dynamic Fields - Lecturer */}
+              {userType === 'lecturer' && (
+                <>
+                  <div className="relative group">
+                    <Hash className={iconStyle} size={18} />
+                    <input name="employeeId" type="text" required value={formData.employeeId} onChange={handleInputChange} className={inputStyle} placeholder="Employee ID" />
+                  </div>
+                  <div className="relative group">
+                    <Building2 className={iconStyle} size={18} />
+                    <input name="department" type="text" required value={formData.department} onChange={handleInputChange} className={inputStyle} placeholder="Department" />
+                  </div>
+                </>
+              )}
+
+              {/* Passwords */}
+              <div className="relative group">
+                <Lock className={iconStyle} size={18} />
+                <input name="password" type={showPassword ? 'text' : 'password'} required value={formData.password} onChange={handleInputChange} className={inputStyle} placeholder="Password" />
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute -translate-y-1/2 right-4 top-1/2 text-slate-400">
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
               </div>
-
-              <div>
-                <label htmlFor="department" className="block text-sm font-medium text-gray-700">
-                  Department
-                </label>
-                <input
-                  id="department"
-                  name="department"
-                  type="text"
-                  required
-                  value={formData.department}
-                  onChange={handleInputChange}
-                  className="block w-full px-3 py-2 mt-1 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="e.g., Computer Science, Mathematics"
-                />
+              <div className="relative group">
+                <Lock className={iconStyle} size={18} />
+                <input name="confirmPassword" type={showConfirmPassword ? 'text' : 'password'} required value={formData.confirmPassword} onChange={handleInputChange} className={inputStyle} placeholder="Confirm" />
+                <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute -translate-y-1/2 right-4 top-1/2 text-slate-400">
+                  {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
               </div>
-            </>
-          )}
-
-          {/* Password Field */}
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-              Password
-            </label>
-            <div className="relative">
-              <input
-                id="password"
-                name="password"
-                type={showPassword ? 'text' : 'password'}
-                required
-                value={formData.password}
-                onChange={handleInputChange}
-                className="block w-full px-3 py-2 pr-10 mt-1 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Enter your password"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 flex items-center pr-3"
-              >
-                {showPassword ? (
-                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
-                  </svg>
-                ) : (
-                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                  </svg>
-                )}
-              </button>
             </div>
-          </div>
 
-          {/* Confirm Password Field */}
-          <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-              Confirm Password
-            </label>
-            <div className="relative">
-              <input
-                id="confirmPassword"
-                name="confirmPassword"
-                type={showConfirmPassword ? 'text' : 'password'}
-                required
-                value={formData.confirmPassword}
-                onChange={handleInputChange}
-                className="block w-full px-3 py-2 pr-10 mt-1 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Confirm your password"
-              />
-              <button
-                type="button"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute inset-y-0 right-0 flex items-center pr-3"
-              >
-                {showConfirmPassword ? (
-                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
-                  </svg>
-                ) : (
-                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                  </svg>
-                )}
-              </button>
-            </div>
-          </div>
-
-          <div>
             <button
               type="submit"
               disabled={isLoading}
-              className="flex justify-center w-full px-4 py-2 text-sm font-medium text-white transition-all border border-transparent rounded-md shadow-sm bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-[#006838] hover:bg-[#004d2a] text-white py-4 rounded-2xl font-bold text-lg shadow-xl shadow-[#006838]/20 transition-all active:scale-[0.98] disabled:opacity-70 flex items-center justify-center gap-2 mt-4"
             >
-              {isLoading ? (
-                <div className="flex items-center">
-                  <svg className="w-5 h-5 mr-3 -ml-1 text-white animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Creating Account...
-                </div>
-              ) : (
-                'Create Account'
-              )}
+              {isLoading ? <Loader2 className="animate-spin" size={22} /> : <span>Create Account</span>}
             </button>
-          </div>
 
-          {error && (
-            <div className="p-4 rounded-md bg-red-50">
-              <div className="flex">
-                <div className="flex-shrink-0">
-                  <svg className="w-5 h-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <div className="ml-3">
-                  <p className="text-sm text-red-800">{error}</p>
-                </div>
+            {error && (
+              <div className="flex items-center gap-2 p-4 text-red-600 border border-red-100 bg-red-50 rounded-xl">
+                <AlertCircle size={18} />
+                <span className="text-sm font-medium">{error}</span>
               </div>
-            </div>
-          )}
-        </form>
+            )}
+          </form>
 
-        <div className="text-center">
-          <p className="text-sm text-gray-600">
-            Already have an account?{' '}
-            <button
-              onClick={() => navigate('/login')}
-              className="font-medium text-blue-600 hover:text-blue-500"
-            >
-              Sign in here
-            </button>
-          </p>
+          <div className="pt-6 mt-8 text-center border-t border-slate-200/50">
+            <p className="text-sm font-medium text-slate-500">
+              Already a member?{' '}
+              <button onClick={() => navigate('/login')} className="text-[#006838] font-bold hover:underline">
+                Sign In
+              </button>
+            </p>
+          </div>
         </div>
       </div>
     </div>

@@ -1,10 +1,20 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { 
+  GraduationCap, 
+  Briefcase, 
+  ShieldCheck, 
+  Eye, 
+  EyeOff, 
+  LogIn, 
+  AlertCircle,
+  Loader2,
+  Lock,
+  Mail
+} from 'lucide-react';
 import { AuthService, type UserType } from '../data/authService';
 
 const Login: React.FC = () => {
-  console.log('Login component rendering');
-
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [userType, setUserType] = useState<UserType>('student');
@@ -20,193 +30,148 @@ const Login: React.FC = () => {
 
     try {
       const user = AuthService.login({ email, password, userType });
-
       if (user) {
-        // Save user to localStorage
         AuthService.saveUser(user);
-
-        // Redirect based on user type
-        switch (user.type) {
-          case 'student':
-            navigate('/student/dashboard');
-            break;
-          case 'lecturer':
-            navigate('/lecturer/dashboard');
-            break;
-          case 'admin':
-            navigate('/admin/dashboard');
-            break;
-        }
+        const paths = { student: '/student/dashboard', lecturer: '/lecturer/dashboard', admin: '/admin/dashboard' };
+        navigate(paths[user.type]);
       } else {
-        setError('Invalid email, password, or user type. Please try again.');
+        setError('Invalid credentials for selected role.');
       }
     } catch (err) {
-      setError('An error occurred during login. Please try again.');
+      setError('Connection error. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      <div className="max-w-md w-full space-y-8 p-8">
-        <div className="text-center">
-          <div className="mx-auto h-16 w-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center mb-4">
-            <svg className="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-          </div>
-          <h2 className="text-3xl font-bold text-gray-900">Present</h2>
-          <p className="mt-2 text-sm text-gray-600">University Attendance Management System</p>
-        </div>
+    <div className="relative min-h-screen flex items-center justify-center p-4 bg-[#f8faf8] overflow-hidden">
+      {/* --- LIQUID UI ELEMENTS --- */}
+      <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-[#006838]/10 rounded-full blur-[120px] animate-pulse" />
+      <div className="absolute bottom-[-5%] right-[-5%] w-[400px] h-[400px] bg-[#F9A825]/10 rounded-full blur-[100px]" />
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="space-y-4">
-            {/* User Type Selection */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">I am a:</label>
-              <div className="grid grid-cols-3 gap-3">
+      {/* --- MAIN LOGIN CARD (GLASS) --- */}
+      <div className="relative w-full max-w-[450px] z-10">
+        <div className="bg-white/40 backdrop-blur-2xl border border-white/40 shadow-2xl rounded-[32px] p-8 lg:p-10">
+          
+          {/* Logo Section */}
+          <div className="mb-8 text-center">
+            <div className="mx-auto w-20 h-20 bg-gradient-to-br from-[#006838] to-[#004d2a] rounded-[24px] flex items-center justify-center mb-4 shadow-xl shadow-[#006838]/20 ring-4 ring-white/30">
+              <span className="text-2xl font-black tracking-tighter text-white">UMU</span>
+            </div>
+            <h2 className="text-2xl font-bold tracking-tight text-slate-900">Welcome Back</h2>
+            <p className="text-sm font-medium text-slate-500">University Attendance System</p>
+          </div>
+
+          <form className="space-y-5" onSubmit={handleSubmit}>
+            {/* User Type - Modern Apple-style Segmented Control */}
+            <div className="space-y-3">
+              <label className="text-[13px] font-semibold text-slate-600 uppercase tracking-wider ml-1">Role</label>
+              <div className="grid grid-cols-3 gap-2 bg-slate-200/30 p-1.5 rounded-2xl">
                 {[
-                  { value: 'student', label: 'Student', icon: '👨‍🎓' },
-                  { value: 'lecturer', label: 'Lecturer', icon: '👨‍🏫' },
-                  { value: 'admin', label: 'Admin', icon: '👔' }
+                  { value: 'student', label: 'Student', icon: GraduationCap },
+                  { value: 'lecturer', label: 'Staff', icon: Briefcase },
+                  { value: 'admin', label: 'Admin', icon: ShieldCheck }
                 ].map((type) => (
                   <button
                     key={type.value}
                     type="button"
                     onClick={() => setUserType(type.value as any)}
-                    className={`p-3 text-center border rounded-lg transition-all ${
+                    className={`flex flex-col items-center justify-center py-3 rounded-xl transition-all duration-300 ${
                       userType === type.value
-                        ? 'border-blue-500 bg-blue-50 text-blue-700'
-                        : 'border-gray-300 hover:border-gray-400'
+                        ? 'bg-white shadow-md text-[#006838] scale-100'
+                        : 'text-slate-500 hover:bg-white/50 scale-95 opacity-70'
                     }`}
                   >
-                    <div className="text-2xl mb-1">{type.icon}</div>
-                    <div className="text-sm font-medium">{type.label}</div>
+                    <type.icon size={20} className="mb-1" strokeWidth={2.5} />
+                    <span className="text-[11px] font-bold">{type.label}</span>
                   </button>
                 ))}
               </div>
             </div>
 
             {/* Email Field */}
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email Address
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Enter your email"
-              />
+            <div className="space-y-1.5">
+              <label className="text-[13px] font-semibold text-slate-600 ml-1">Academic Email</label>
+              <div className="relative group">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#006838] transition-colors" size={18} />
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full pl-12 pr-4 py-3.5 bg-white/50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-[#006838]/5 focus:border-[#006838] transition-all placeholder:text-slate-400"
+                  placeholder="name@umu.ac.ug"
+                />
+              </div>
             </div>
 
             {/* Password Field */}
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Password
-              </label>
-              <div className="relative">
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between ml-1">
+                <label className="text-[13px] font-semibold text-slate-600">Password</label>
+                <a href="#" className="text-[12px] font-bold text-[#006838] hover:underline">Forgot?</a>
+              </div>
+              <div className="relative group">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#006838] transition-colors" size={18} />
                 <input
-                  id="password"
-                  name="password"
                   type={showPassword ? 'text' : 'password'}
-                  autoComplete="current-password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="mt-1 block w-full px-3 py-2 pr-10 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Enter your password"
+                  className="w-full pl-12 pr-12 py-3.5 bg-white/50 border border-slate-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-[#006838]/5 focus:border-[#006838] transition-all placeholder:text-slate-400"
+                  placeholder="••••••••"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  className="absolute transition-colors -translate-y-1/2 right-4 top-1/2 text-slate-400 hover:text-slate-600"
                 >
-                  {showPassword ? (
-                    <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
-                    </svg>
-                  ) : (
-                    <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
-                  )}
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
             </div>
-          </div>
 
-          <div className="flex items-center justify-between">
-            <div className="text-sm">
-              <a href="#" className="font-medium text-blue-600 hover:text-blue-500">
-                Forgot your password?
-              </a>
-            </div>
-          </div>
-
-          <div>
+            {/* Submit Button */}
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              className="w-full bg-[#006838] hover:bg-[#004d2a] text-white py-4 rounded-2xl font-bold text-lg shadow-xl shadow-[#006838]/20 transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {isLoading ? (
-                <div className="flex items-center">
-                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Signing in...
-                </div>
+                <Loader2 className="animate-spin" size={22} />
               ) : (
-                'Sign in'
+                <>
+                  <span>Sign In</span>
+                  <LogIn size={20} />
+                </>
               )}
             </button>
-          </div>
 
-          {error && (
-            <div className="rounded-md bg-red-50 p-4">
-              <div className="flex">
-                <div className="flex-shrink-0">
-                  <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <div className="ml-3">
-                  <p className="text-sm text-red-800">{error}</p>
-                </div>
+            {error && (
+              <div className="flex items-center gap-2 p-3 text-red-600 border border-red-100 bg-red-50 rounded-xl animate-in fade-in slide-in-from-top-2">
+                <AlertCircle size={18} />
+                <span className="text-sm font-medium">{error}</span>
               </div>
-            </div>
-          )}
-        </form>
+            )}
+          </form>
 
-        <div className="text-center">
-          <p className="text-sm text-gray-600">
-            Don't have an account?{' '}
-            <button
-              onClick={() => navigate('/register')}
-              className="font-medium text-blue-600 hover:text-blue-500"
-            >
-              Register here
-            </button>
-          </p>
+          <div className="pt-6 mt-8 text-center border-t border-slate-200/50">
+            <p className="text-sm font-medium text-slate-500">
+              New to the system?{' '}
+              <button 
+                onClick={() => navigate('/register')}
+                className="text-[#006838] font-bold hover:underline"
+              >
+                Create Account
+              </button>
+            </p>
+          </div>
         </div>
 
-        {/* Demo Credentials */}
-        <div className="mt-8 bg-blue-50 rounded-lg p-4">
-          <h3 className="text-sm font-medium text-blue-900 mb-2">Demo Credentials</h3>
-          <div className="text-xs text-blue-800 space-y-1">
-            <div><strong>Student:</strong> alice.johnson@university.edu / student123</div>
-            <div><strong>Lecturer:</strong> sarah.johnson@university.edu / lecturer123</div>
-            <div><strong>Admin:</strong> admin@university.edu / admin123</div>
-          </div>
+        {/* Credentials Tooltip - Optional for Production */}
+        <div className="mt-6 text-center">
+            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Uganda Martyrs University © 2026</p>
         </div>
       </div>
     </div>

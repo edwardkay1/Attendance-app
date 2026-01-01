@@ -1,218 +1,191 @@
+import { useState } from 'react';
+import { 
+  QrCode, User, Calendar, CheckCircle, 
+  TrendingUp, Clock, ChevronRight, 
+  LayoutDashboard, Bell, X 
+} from 'lucide-react';
 import PageWrapper from "../../components/layout/student/PageWrapper";
 import AttendanceScanner from "../../components/common/AttendanceScanner";
 import { getStudentStats, getStudentAttendanceRecords } from "../../data/mockStudentData";
 import { getCurrentStudent } from "../../data/authService";
-import { useState } from "react";
 
 export default function StudentDashboard() {
-  // Get the current authenticated student
   const currentStudent = getCurrentStudent();
   const stats = currentStudent ? getStudentStats(currentStudent.id) : null;
   const recentRecords = currentStudent ? getStudentAttendanceRecords(currentStudent.id).slice(0, 3) : [];
 
   const [showScanner, setShowScanner] = useState(false);
-  const [lastAttendanceMarked, setLastAttendanceMarked] = useState<string | null>(null);
+  const [lastMarked, setLastMarked] = useState<string | null>(null);
 
-  const handleAttendanceMarked = (qrData: string) => {
-    // In a real app, this would send the data to the backend
-    console.log('Attendance marked with QR data:', qrData);
-    setLastAttendanceMarked(new Date().toLocaleString());
+  const handleAttendanceMarked = (_qrData: string) => {
+    setLastMarked(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
     setShowScanner(false);
-
-    // Show success message (you could add a toast notification here)
-    alert('Attendance marked successfully! 🎉');
+    // Real logic would include a toast notification here
   };
 
-  if (!currentStudent || !stats) {
-    return (
-      <PageWrapper>
-        <div className="py-12 text-center">
-          <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-r from-red-400 to-pink-500">
-            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-            </svg>
-          </div>
-          <p className="text-lg text-gray-600">Student data not found</p>
-        </div>
-      </PageWrapper>
-    );
-  }
+  if (!currentStudent || !stats) return null;
 
   return (
     <PageWrapper>
-      <div className="space-y-8">
-        {/* Header Section */}
-        <div className="p-8 text-white shadow-xl bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 rounded-2xl">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="mb-2 text-4xl font-bold">Welcome back, {currentStudent.name.split(' ')[0]}! 👋</h1>
-              <p className="text-lg text-blue-100">Here's your attendance overview for today</p>
-              <div className="flex items-center mt-4 space-x-4">
-                <span className="px-3 py-1 text-sm rounded-full bg-white/20 backdrop-blur-sm">
-                  {currentStudent.studentId}
+      <div className="pb-20 mx-auto space-y-10 max-w-7xl">
+        
+        {/* 1. Profile Hero Section */}
+        <div className="relative overflow-hidden bg-slate-900 rounded-[40px] p-8 md:p-12 shadow-2xl group">
+          {/* Decorative Glass Elements */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[#006838]/20 rounded-full blur-[80px] -mr-32 -mt-32 transition-transform group-hover:scale-110 duration-700" />
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-500/10 rounded-full blur-[60px] -ml-24 -mb-24" />
+
+          <div className="relative flex flex-col items-center justify-between gap-8 md:flex-row">
+            <div className="text-center md:text-left">
+              <h1 className="mb-4 text-4xl font-black tracking-tight text-white md:text-5xl">
+                Hi, {currentStudent.name.split(' ')[0]}! 👋
+              </h1>
+              <div className="flex flex-wrap justify-center gap-3 md:justify-start">
+                <span className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-white border bg-white/10 backdrop-blur-lg rounded-2xl border-white/10">
+                  <User size={14} className="text-[#F9A825]" /> {currentStudent.studentId}
                 </span>
-                <span className="px-3 py-1 text-sm rounded-full bg-white/20 backdrop-blur-sm">
-                  {currentStudent.course}
+                <span className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-white border bg-white/10 backdrop-blur-lg rounded-2xl border-white/10">
+                  <LayoutDashboard size={14} className="text-blue-400" /> {currentStudent.course}
                 </span>
-                <span className="px-3 py-1 text-sm rounded-full bg-white/20 backdrop-blur-sm">
-                  Year {currentStudent.year}
+                <span className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-white border bg-white/10 backdrop-blur-lg rounded-2xl border-white/10">
+                  <Calendar size={14} className="text-green-400" /> Year {currentStudent.year}
                 </span>
               </div>
             </div>
-            <div className="hidden md:block">
-              <div className="flex items-center justify-center w-20 h-20 rounded-full bg-white/20 backdrop-blur-sm">
-                <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
+            
+            <div className="flex-col items-center hidden gap-2 md:flex">
+              <div className="w-20 h-20 bg-white/10 backdrop-blur-2xl rounded-[30px] border border-white/20 flex items-center justify-center shadow-inner">
+                <Bell size={32} className="text-white/40" />
               </div>
+              <p className="text-[10px] font-black text-white/40 uppercase tracking-widest">No Alerts</p>
             </div>
           </div>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-          <div className="p-6 text-white transition-all duration-300 transform shadow-lg bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl hover:shadow-xl hover:-translate-y-1">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-blue-100">Total Classes</p>
-                <p className="mt-1 text-3xl font-bold">{stats.totalClasses}</p>
-              </div>
-              <div className="flex items-center justify-center w-12 h-12 bg-white/20 rounded-xl">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-              </div>
-            </div>
-          </div>
-
-          <div className="p-6 text-white transition-all duration-300 transform shadow-lg bg-gradient-to-br from-green-500 to-green-600 rounded-2xl hover:shadow-xl hover:-translate-y-1">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-green-100">Present</p>
-                <p className="mt-1 text-3xl font-bold">{stats.presentCount}</p>
-              </div>
-              <div className="flex items-center justify-center w-12 h-12 bg-white/20 rounded-xl">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-            </div>
-          </div>
-
-          <div className="p-6 text-white transition-all duration-300 transform shadow-lg bg-gradient-to-br from-red-500 to-red-600 rounded-2xl hover:shadow-xl hover:-translate-y-1">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-red-100">Absent</p>
-                <p className="mt-1 text-3xl font-bold">{stats.absentCount}</p>
-              </div>
-              <div className="flex items-center justify-center w-12 h-12 bg-white/20 rounded-xl">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </div>
-            </div>
-          </div>
-
-          <div className="p-6 text-white transition-all duration-300 transform shadow-lg bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl hover:shadow-xl hover:-translate-y-1">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-purple-100">Attendance Rate</p>
-                <p className="mt-1 text-3xl font-bold">{stats.attendanceRate}%</p>
-              </div>
-              <div className="flex items-center justify-center w-12 h-12 bg-white/20 rounded-xl">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                </svg>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Mark Attendance Card */}
-        <div className="p-8 text-white shadow-xl bg-gradient-to-r from-green-500 via-emerald-500 to-teal-600 rounded-2xl">
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <h3 className="mb-2 text-2xl font-bold">Ready to mark attendance? </h3>
-              <p className="mb-4 text-green-100">Scan the QR code provided by your lecturer to mark your attendance for today's class.</p>
-              {lastAttendanceMarked && (
-                <p className="text-sm text-green-200">
-                  ✓ Last marked: {lastAttendanceMarked}
-                </p>
+        {/* 2. Attendance Action Hub */}
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+          
+          {/* Main Scanner Trigger */}
+          <div className="lg:col-span-2 relative overflow-hidden bg-gradient-to-br from-[#006838] to-[#004d2a] rounded-[40px] p-8 md:p-10 shadow-xl shadow-[#006838]/20 flex flex-col md:flex-row items-center gap-8 group">
+            <div className="flex-1 text-center md:text-left">
+              <h3 className="mb-2 text-2xl font-black text-white">Class Attendance</h3>
+              <p className="mb-6 text-sm font-medium leading-relaxed text-white/70">
+                Scan your lecturer's QR code to verify your presence for the current session.
+              </p>
+              {lastMarked && (
+                <div className="inline-flex items-center gap-2 px-4 py-2 mb-4 text-xs font-bold text-white bg-white/20 rounded-xl">
+                  <CheckCircle size={14} /> Last Marked: {lastMarked}
+                </div>
               )}
             </div>
-            <div className="ml-6">
-              <button
-                onClick={() => setShowScanner(true)}
-                className="flex items-center px-8 py-4 space-x-3 font-semibold text-green-600 transition-all duration-300 transform bg-white shadow-lg rounded-xl hover:bg-green-50 hover:scale-105 hover:shadow-xl"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M12 12l3-3m-3 3l-3-3m-3 7h2.99M9 12H5m0 0v4" />
-                </svg>
-                <span>Scan QR Code</span>
-              </button>
+            <button
+              onClick={() => setShowScanner(true)}
+              className="w-full md:w-auto h-20 px-10 bg-white rounded-[24px] shadow-2xl shadow-black/20 flex items-center justify-center gap-4 hover:scale-[1.03] active:scale-95 transition-all duration-300 group"
+            >
+              <div className="w-12 h-12 bg-[#006838]/10 rounded-xl flex items-center justify-center text-[#006838]">
+                <QrCode size={28} />
+              </div>
+              <div className="text-left">
+                <p className="text-[10px] font-black text-[#006838] uppercase tracking-widest leading-none">Tap to scan</p>
+                <p className="mt-1 text-xl font-black text-slate-900">Check In</p>
+              </div>
+            </button>
+          </div>
+
+          {/* Compliance Meter */}
+          <div className="bg-white border border-slate-100 rounded-[40px] p-8 shadow-sm flex flex-col justify-center items-center text-center">
+            <div className="relative flex items-center justify-center w-24 h-24 mb-4">
+              <svg className="w-full h-full transform -rotate-90">
+                <circle cx="48" cy="48" r="40" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-slate-50" />
+                <circle cx="48" cy="48" r="40" stroke="currentColor" strokeWidth="8" fill="transparent" strokeDasharray={251.2} strokeDashoffset={251.2 - (251.2 * stats.attendanceRate) / 100} className="text-[#006838] transition-all duration-1000 ease-out" />
+              </svg>
+              <span className="absolute text-xl font-black text-slate-900">{stats.attendanceRate}%</span>
             </div>
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Current Rate</p>
+            <h4 className="text-sm font-black uppercase text-slate-900">Compliance Score</h4>
           </div>
         </div>
 
-        {/* Recent Activity */}
-        <div className="p-8 bg-white shadow-lg rounded-2xl">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-2xl font-bold text-gray-900">Recent Activity</h3>
-            <span className="px-3 py-1 text-sm text-gray-500 bg-gray-100 rounded-full">
-              Last 3 classes
-            </span>
+        {/* 3. Detailed Vitals & Activity */}
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+          {[
+            { label: 'Total Sessions', val: stats.totalClasses, icon: Calendar, color: 'text-blue-600', bg: 'bg-blue-50' },
+            { label: 'Present', val: stats.presentCount, icon: CheckCircle, color: 'text-[#006838]', bg: 'bg-green-50' },
+            { label: 'Absences', val: stats.absentCount, icon: X, color: 'text-red-600', bg: 'bg-red-50' },
+            { label: 'Academic Standing', val: 'Good', icon: TrendingUp, color: 'text-purple-600', bg: 'bg-purple-50' },
+          ].map((s, i) => (
+            <div key={i} className="bg-white p-6 rounded-[32px] border border-slate-100 shadow-sm flex items-center gap-5 transition-transform hover:scale-[1.02]">
+              <div className={`w-12 h-12 ${s.bg} ${s.color} rounded-2xl flex items-center justify-center`}>
+                <s.icon size={22} />
+              </div>
+              <div>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">{s.label}</p>
+                <p className="text-xl font-black leading-none text-slate-900">{s.val}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* 4. Recent Logs */}
+        <div className="bg-white border border-slate-100 rounded-[40px] shadow-sm overflow-hidden">
+          <div className="flex items-center justify-between p-8 border-b border-slate-50">
+            <h3 className="flex items-center gap-3 text-xl font-black text-slate-900">
+              <Clock className="text-[#006838]" size={24} /> Recent Logs
+            </h3>
+            <button className="text-xs font-black text-[#006838] uppercase tracking-widest hover:translate-x-1 transition-transform flex items-center gap-2">
+              Full History <ChevronRight size={14} />
+            </button>
           </div>
-          <div className="space-y-4">
-            {recentRecords.map((record, index) => (
-              <div key={record.id} className={`flex items-center justify-between p-4 rounded-xl transition-all duration-200 hover:shadow-md ${
-                index % 2 === 0 ? 'bg-gray-50' : 'bg-white'
-              }`}>
-                <div className="flex items-center space-x-4">
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                    record.status === 'present'
-                      ? 'bg-green-100'
-                      : record.status === 'absent'
-                      ? 'bg-red-100'
-                      : 'bg-yellow-100'
-                  }`}>
-                    <span className="text-xl">
-                      {record.status === 'present' ? '✅' : record.status === 'absent' ? '❌' : '⏰'}
-                    </span>
+          <div className="divide-y divide-slate-50">
+            {recentRecords.map((record) => (
+              <div key={record.id} className="flex items-center justify-between p-6 transition-colors hover:bg-slate-50 group">
+                <div className="flex items-center gap-5">
+                  <div className={`w-14 h-14 rounded-2xl flex flex-col items-center justify-center border border-slate-100 group-hover:border-[#006838]/20 transition-colors`}>
+                    <span className="text-[9px] font-black text-[#006838] uppercase">{new Date(record.date).toLocaleDateString('en-US', { month: 'short' })}</span>
+                    <span className="text-lg font-black text-slate-900 leading-none mt-0.5">{new Date(record.date).getDate()}</span>
                   </div>
                   <div>
-                    <p className="font-semibold text-gray-900">{record.subject}</p>
-                    <p className="text-sm text-gray-600">
-                      {new Date(record.date).toLocaleDateString('en-US', {
-                        month: 'short',
-                        day: 'numeric',
-                        year: 'numeric'
-                      })} • {record.time} • {record.lecturer}
+                    <h4 className="text-sm font-black text-slate-900 group-hover:text-[#006838] transition-colors">{record.subject}</h4>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase flex items-center gap-1 mt-1">
+                      <User size={10} /> {record.lecturer} • <Clock size={10} /> {record.time}
                     </p>
                   </div>
                 </div>
-                <span className={`px-4 py-2 rounded-full text-sm font-medium ${
-                  record.status === 'present'
-                    ? 'bg-green-100 text-green-800'
-                    : record.status === 'absent'
-                    ? 'bg-red-100 text-red-800'
-                    : 'bg-yellow-100 text-yellow-800'
+                <div className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${
+                  record.status === 'present' ? 'bg-green-50 text-green-600' : 
+                  record.status === 'absent' ? 'bg-red-50 text-red-600' : 'bg-amber-50 text-amber-600'
                 }`}>
-                  {record.status.charAt(0).toUpperCase() + record.status.slice(1)}
-                </span>
+                  {record.status}
+                </div>
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      {/* Attendance Scanner Modal */}
+      {/* Modern Scanner Modal */}
       {showScanner && (
-        <AttendanceScanner
-          onAttendanceMarked={handleAttendanceMarked}
-          onClose={() => setShowScanner(false)}
-        />
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+          <div className="absolute inset-0 duration-300 bg-slate-900/60 backdrop-blur-xl animate-in fade-in" onClick={() => setShowScanner(false)} />
+          <div className="relative w-full max-w-lg bg-white rounded-[40px] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
+            <div className="flex items-center justify-between p-8 border-b border-slate-50">
+              <h3 className="text-xl font-black text-slate-900">Scan Session QR</h3>
+              <button onClick={() => setShowScanner(false)} className="flex items-center justify-center w-10 h-10 transition-colors rounded-full bg-slate-50 text-slate-400 hover:text-slate-900">
+                <X size={20} />
+              </button>
+            </div>
+            <div className="p-8">
+              <AttendanceScanner
+                onAttendanceMarked={handleAttendanceMarked}
+                onClose={() => setShowScanner(false)}
+              />
+              <p className="mt-8 text-center text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] animate-pulse">
+                Align QR Code within the frame
+              </p>
+            </div>
+          </div>
+        </div>
       )}
     </PageWrapper>
   );
 }
-

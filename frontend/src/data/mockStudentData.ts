@@ -5,29 +5,29 @@ export const mockStudents: Student[] = [
   {
     id: '1',
     name: 'Alice Johnson',
-    email: 'alice.johnson@university.edu',
+    email: 'alice.johnson@umu.ac.ug',
     studentId: 'STU001',
     course: 'Computer Science',
     year: 3,
-    facultyId: 'engineering',
+    facultyId: 'science',
     isApproved: true,
     createdAt: '2024-01-15T10:00:00Z'
   },
   {
     id: '2',
     name: 'Bob Smith',
-    email: 'bob.smith@university.edu',
+    email: 'bob.smith@umu.ac.ug',
     studentId: 'STU002',
     course: 'Computer Science',
     year: 2,
-    facultyId: 'engineering',
+    facultyId: 'science',
     isApproved: true,
     createdAt: '2024-01-15T10:00:00Z'
   },
   {
     id: '3',
     name: 'Charlie Brown',
-    email: 'charlie.brown@university.edu',
+    email: 'charlie.brown@umu.ac.ug',
     studentId: 'STU003',
     course: 'Mathematics',
     year: 3,
@@ -38,7 +38,7 @@ export const mockStudents: Student[] = [
   {
     id: '4',
     name: 'Diana Wilson',
-    email: 'diana.wilson@university.edu',
+    email: 'diana.wilson@umu.ac.ug',
     studentId: 'STU004',
     course: 'Physics',
     year: 2,
@@ -49,7 +49,7 @@ export const mockStudents: Student[] = [
   {
     id: '5',
     name: 'Edward Davis',
-    email: 'edward.davis@university.edu',
+    email: 'edward.davis@umu.ac.ug',
     studentId: 'STU005',
     course: 'Chemistry',
     year: 4,
@@ -60,7 +60,7 @@ export const mockStudents: Student[] = [
   {
     id: '6',
     name: 'Fiona Garcia',
-    email: 'fiona.garcia@university.edu',
+    email: 'fiona.garcia@umu.ac.ug',
     studentId: 'STU006',
     course: 'Biology',
     year: 3,
@@ -71,18 +71,18 @@ export const mockStudents: Student[] = [
   {
     id: '7',
     name: 'George Miller',
-    email: 'george.miller@university.edu',
+    email: 'george.miller@umu.ac.ug',
     studentId: 'STU007',
     course: 'Engineering',
     year: 2,
-    facultyId: 'engineering',
+    facultyId: 'science',
     isApproved: true,
     createdAt: '2024-01-15T10:00:00Z'
   },
   {
     id: '8',
     name: 'Helen Taylor',
-    email: 'helen.taylor@university.edu',
+    email: 'helen.taylor@umu.ac.ug',
     studentId: 'STU008',
     course: 'Business',
     year: 3,
@@ -93,7 +93,7 @@ export const mockStudents: Student[] = [
   {
     id: '9',
     name: 'Ian Anderson',
-    email: 'ian.anderson@university.edu',
+    email: 'ian.anderson@umu.ac.ug',
     studentId: 'STU009',
     course: 'History',
     year: 4,
@@ -104,7 +104,7 @@ export const mockStudents: Student[] = [
   {
     id: '10',
     name: 'Julia Martinez',
-    email: 'julia.martinez@university.edu',
+    email: 'julia.martinez@umu.ac.ug',
     studentId: 'STU010',
     course: 'Literature',
     year: 2,

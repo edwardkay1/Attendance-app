@@ -1,6 +1,4 @@
 import type { Admin, Faculty, SystemStats, CourseStats, ActivityLog } from '../types/admin';
-import type { Student } from '../types/student';
-import type { Lecturer, Course } from '../types/lecturer';
 import { mockStudents, mockAttendanceRecords } from './mockStudentData';
 import { mockLecturers, mockCourses, mockQRCodeSessions } from './mockLecturerData';
 
@@ -13,16 +11,28 @@ export const mockFaculties: Faculty[] = [
     deanId: 'LEC001'
   },
   {
-    id: 'agriculture',
-    name: 'Faculty of Agriculture',
-    domain: 'agriculture',
+    id: 'education',
+    name: 'Faculty of Education',
+    domain: 'education',
     deanId: 'LEC002'
   },
   {
-    id: 'fobe',
-    name: 'Faculty of Business and Economics',
-    domain: 'fobe',
+    id: 'business',
+    name: 'Faculty of Business Administration and Management',
+    domain: 'business',
     deanId: 'LEC003'
+  },
+  {
+    id: 'health',
+    name: 'Faculty of Health Sciences',
+    domain: 'health',
+    deanId: 'LEC004'
+  },
+  {
+    id: 'arts',
+    name: 'Faculty of Arts and Social Sciences',
+    domain: 'arts',
+    deanId: 'LEC005'
   }
 ];
 
@@ -31,7 +41,7 @@ export const mockAdmins: Admin[] = [
   {
     id: 'ADM001',
     name: 'System Administrator',
-    email: 'admin@university.edu',
+    email: 'admin@umu.ac.ug',
     role: 'super_admin',
     permissions: ['all'],
     isApproved: true,
@@ -40,7 +50,7 @@ export const mockAdmins: Admin[] = [
   {
     id: 'ADM002',
     name: 'Science Faculty Admin',
-    email: 'science.admin@university.edu',
+    email: 'science.admin@umu.ac.ug',
     role: 'faculty_admin',
     facultyId: 'science',
     permissions: ['manage_users', 'view_reports', 'manage_courses', 'approve_registrations'],
@@ -49,20 +59,40 @@ export const mockAdmins: Admin[] = [
   },
   {
     id: 'ADM003',
-    name: 'Agriculture Faculty Admin',
-    email: 'agriculture.admin@university.edu',
+    name: 'Education Faculty Admin',
+    email: 'education.admin@umu.ac.ug',
     role: 'faculty_admin',
-    facultyId: 'agriculture',
+    facultyId: 'education',
     permissions: ['manage_users', 'view_reports', 'manage_courses', 'approve_registrations'],
     isApproved: true,
     createdAt: new Date().toISOString()
   },
   {
     id: 'ADM004',
-    name: 'FOBE Faculty Admin',
-    email: 'fobe.admin@university.edu',
+    name: 'Business Faculty Admin',
+    email: 'business.admin@umu.ac.ug',
     role: 'faculty_admin',
-    facultyId: 'fobe',
+    facultyId: 'business',
+    permissions: ['manage_users', 'view_reports', 'manage_courses', 'approve_registrations'],
+    isApproved: true,
+    createdAt: new Date().toISOString()
+  },
+  {
+    id: 'ADM005',
+    name: 'Health Sciences Faculty Admin',
+    email: 'health.admin@umu.ac.ug',
+    role: 'faculty_admin',
+    facultyId: 'health',
+    permissions: ['manage_users', 'view_reports', 'manage_courses', 'approve_registrations'],
+    isApproved: true,
+    createdAt: new Date().toISOString()
+  },
+  {
+    id: 'ADM006',
+    name: 'Arts Faculty Admin',
+    email: 'arts.admin@umu.ac.ug',
+    role: 'faculty_admin',
+    facultyId: 'arts',
     permissions: ['manage_users', 'view_reports', 'manage_courses', 'approve_registrations'],
     isApproved: true,
     createdAt: new Date().toISOString()
@@ -150,3 +180,6 @@ export const addActivityLog = (log: Omit<ActivityLog, 'id' | 'timestamp'>): void
   };
   mockActivityLogs.unshift(newLog);
 };
+
+// Re-export from mockLecturerData for convenience
+export { mockCourses, mockLecturers } from './mockLecturerData';

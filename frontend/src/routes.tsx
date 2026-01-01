@@ -10,7 +10,6 @@ import LecturerClasses from './pages/lecturer/LecturerClasses';
 import LecturerMarkAttendance from './pages/lecturer/MarkAttendance';
 import AdminDashboard from './pages/admin/Dashboard';
 import AdminUsers from './pages/admin/Users';
-import AdminCourses from './pages/admin/Courses';
 import SuperAdminDashboard from './pages/admin/SuperAdminDashboard';
 
 // Components

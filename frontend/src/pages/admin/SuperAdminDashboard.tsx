@@ -1,170 +1,166 @@
 import React, { useState } from 'react';
+import { 
+  ShieldAlert, Landmark, Users,
+  Settings, Plus, Globe,
+  ToggleLeft, ToggleRight, MoreVertical 
+} from 'lucide-react';
 import { mockFaculties, mockAdmins } from '../../data/mockAdminData';
 import type { Faculty, Admin } from '../../types/admin';
 import AddUserModal from '../../components/modals/AddUserModal';
+import Button from '../../components/common/Button';
+import { StatusBadge } from '../../components/common/StatusBadge';
 
 const SuperAdminDashboard: React.FC = () => {
-  const [faculties, setFaculties] = useState<Faculty[]>(mockFaculties);
+  const [faculties] = useState<Faculty[]>(mockFaculties);
   const [admins, setAdmins] = useState<Admin[]>(mockAdmins);
   const [showAddAdminModal, setShowAddAdminModal] = useState(false);
 
   const facultyAdmins = admins.filter(admin => admin.role === 'faculty_admin');
   const superAdmins = admins.filter(admin => admin.role === 'super_admin');
 
-  const handleAddAdmin = () => {
-    setShowAddAdminModal(true);
-  };
-
   const handleAdminCreated = () => {
-    // Refresh admin list
-    console.log('Admin created successfully');
+    // Refresh the admins list - in a real app, this would refetch from API
+    setAdmins([...admins]); // Trigger re-render
     setShowAddAdminModal(false);
   };
 
   const handleToggleAdminStatus = (adminId: string) => {
     setAdmins(prev => prev.map(admin =>
-      admin.id === adminId
-        ? { ...admin, isApproved: !admin.isApproved }
-        : admin
+      admin.id === adminId ? { ...admin, isApproved: !admin.isApproved } : admin
     ));
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+    <div className="pb-16 space-y-8">
+      {/* 1. Global Command Header */}
+      <div className="flex flex-col justify-between gap-6 md:flex-row md:items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Super Admin Dashboard</h1>
-          <p className="mt-1 text-gray-600">System-wide management and faculty administration</p>
+          <div className="flex items-center gap-2 mb-1">
+            <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+            <span className="text-[10px] font-black text-red-500 uppercase tracking-[0.2em]">Root Level Access</span>
+          </div>
+          <h1 className="text-4xl font-black tracking-tight text-slate-900">UMU System Oversight</h1>
+          <p className="font-medium text-slate-500">Global management of Uganda Martyrs University faculties, domains, and administrative tiering.</p>
         </div>
-        <div className="flex space-x-3">
-          <button
-            onClick={handleAddAdmin}
-            className="px-4 py-2 font-medium text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700"
-          >
-            Add Faculty Admin
-          </button>
-        </div>
+        <Button 
+          onClick={() => setShowAddAdminModal(true)}
+          className="bg-slate-900 hover:bg-black text-white px-8 py-4 rounded-[20px] shadow-xl shadow-slate-900/20"
+        >
+          <Plus size={20} className="mr-2" />
+          Provision Faculty Admin
+        </Button>
       </div>
 
-      {/* System Overview */}
+      {/* 2. System Distribution - Glass Cards */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-        <div className="p-6 bg-white border rounded-lg shadow-sm">
-          <div className="flex items-center">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-              </svg>
+        {[
+          { label: 'Total Faculties', val: faculties.length, icon: Landmark, color: 'text-blue-600', bg: 'bg-blue-50' },
+          { label: 'Faculty Admins', val: facultyAdmins.length, icon: Users, color: 'text-[#006838]', bg: 'bg-[#006838]/5' },
+          { label: 'Super Admins', val: superAdmins.length, icon: ShieldAlert, color: 'text-purple-600', bg: 'bg-purple-50' },
+        ].map((stat, i) => (
+          <div key={i} className="bg-white/60 backdrop-blur-md border border-white p-6 rounded-[32px] shadow-sm flex items-center gap-5">
+            <div className={`w-14 h-14 ${stat.bg} ${stat.color} rounded-2xl flex items-center justify-center shadow-inner`}>
+              <stat.icon size={28} />
             </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Total Faculties</p>
-              <p className="text-2xl font-bold text-gray-900">{faculties.length}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="p-6 bg-white border rounded-lg shadow-sm">
-          <div className="flex items-center">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Faculty Admins</p>
-              <p className="text-2xl font-bold text-gray-900">{facultyAdmins.length}</p>
+            <div>
+              <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">{stat.label}</p>
+              <p className="text-3xl font-black tracking-tighter text-slate-900">{stat.val}</p>
             </div>
           </div>
-        </div>
-
-        <div className="p-6 bg-white border rounded-lg shadow-sm">
-          <div className="flex items-center">
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-              </svg>
-            </div>
-            <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Super Admins</p>
-              <p className="text-2xl font-bold text-gray-900">{superAdmins.length}</p>
-            </div>
-          </div>
-        </div>
+        ))}
       </div>
 
-      {/* Faculty Management */}
-      <div className="p-6 bg-white border rounded-lg shadow-sm">
-        <h3 className="mb-4 text-lg font-semibold text-gray-900">Faculty Management</h3>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+      {/* 3. Faculty Infrastructure Map */}
+      <section>
+        <div className="flex items-center justify-between px-2 mb-6">
+          <h3 className="flex items-center gap-2 text-lg font-black text-slate-900">
+            <Globe size={20} className="text-[#006838]" /> Faculty Domains
+          </h3>
+        </div>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {faculties.map((faculty) => {
-            const facultyAdmin = facultyAdmins.find(admin => admin.facultyId === faculty.id);
+            const fAdmin = facultyAdmins.find(a => a.facultyId === faculty.id);
             return (
-              <div key={faculty.id} className="p-4 border border-gray-200 rounded-lg">
-                <div className="flex items-center justify-between mb-2">
-                  <h4 className="font-medium text-gray-900">{faculty.name}</h4>
-                  <span className="px-2 py-1 text-xs text-blue-800 bg-blue-100 rounded-full">
+              <div key={faculty.id} className="group bg-white border border-slate-100 p-6 rounded-[30px] hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-500">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 group-hover:text-[#006838] transition-colors">
+                    <Landmark size={20} />
+                  </div>
+                  <span className="px-3 py-1 bg-blue-50 text-blue-600 text-[10px] font-black uppercase rounded-lg">
                     {faculty.domain}
                   </span>
                 </div>
-                <p className="mb-2 text-sm text-gray-600">
-                  Dean: {faculty.deanId ? `Lecturer ${faculty.deanId}` : 'Not assigned'}
-                </p>
-                <p className="text-sm text-gray-600">
-                  Admin: {facultyAdmin ? facultyAdmin.name : 'Not assigned'}
-                </p>
+                <h4 className="mb-4 text-base font-black text-slate-900">{faculty.name}</h4>
+                <div className="pt-4 space-y-3 border-t border-slate-50">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase">Faculty Admin</span>
+                    <span className="text-xs font-bold text-slate-700">{fAdmin ? fAdmin.name : 'Unassigned'}</span>
+                  </div>
+                </div>
               </div>
             );
           })}
         </div>
-      </div>
+      </section>
 
-      {/* Admin Management */}
-      <div className="p-6 bg-white border rounded-lg shadow-sm">
-        <h3 className="mb-4 text-lg font-semibold text-gray-900">System Administrators</h3>
-        <div className="space-y-4">
+      {/* 4. Administrative Tier List */}
+      <section className="bg-white border border-slate-100 rounded-[40px] overflow-hidden shadow-sm">
+        <div className="flex items-center justify-between p-8 border-b border-slate-50 bg-slate-50/30">
+          <h3 className="text-lg font-black text-slate-900">Access Control List</h3>
+          <Settings size={20} className="text-slate-300" />
+        </div>
+        <div className="divide-y divide-slate-50">
           {admins.map((admin) => (
-            <div key={admin.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
-              <div>
-                <h4 className="font-medium text-gray-900">{admin.name}</h4>
-                <p className="text-sm text-gray-600">{admin.email}</p>
-                <div className="flex items-center mt-1 space-x-2">
-                  <span className={`px-2 py-1 text-xs rounded-full ${
-                    admin.role === 'super_admin'
-                      ? 'bg-purple-100 text-purple-800'
-                      : 'bg-blue-100 text-blue-800'
-                  }`}>
-                    {admin.role === 'super_admin' ? 'Super Admin' : 'Faculty Admin'}
-                  </span>
-                  {admin.facultyId && (
-                    <span className="px-2 py-1 text-xs text-gray-800 bg-gray-100 rounded-full">
-                      {admin.facultyId}
-                    </span>
-                  )}
-                  <span className={`px-2 py-1 text-xs rounded-full ${
-                    admin.isApproved ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                  }`}>
-                    {admin.isApproved ? 'Active' : 'Inactive'}
-                  </span>
+            <div key={admin.id} className="flex flex-col justify-between gap-4 p-6 transition-colors md:flex-row md:items-center hover:bg-slate-50/50">
+              <div className="flex items-center gap-4">
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center font-black text-sm shadow-sm ${
+                  admin.role === 'super_admin' ? 'bg-purple-100 text-purple-600' : 'bg-blue-100 text-blue-600'
+                }`}>
+                  {admin.name.charAt(0)}
+                </div>
+                <div>
+                  <h4 className="text-sm font-black tracking-tight text-slate-900">{admin.name}</h4>
+                  <p className="text-xs font-medium text-slate-400">{admin.email}</p>
                 </div>
               </div>
-              <div className="flex space-x-2">
+
+              <div className="flex flex-wrap items-center gap-3">
+                <div className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${
+                  admin.role === 'super_admin' ? 'bg-purple-50 text-purple-600 border border-purple-100' : 'bg-blue-50 text-blue-600 border border-blue-100'
+                }`}>
+                  {admin.role.replace('_', ' ')}
+                </div>
+                {admin.facultyId && (
+                  <div className="px-3 py-1 rounded-full bg-slate-100 text-slate-500 text-[9px] font-black uppercase border border-slate-200">
+                    {admin.facultyId}
+                  </div>
+                )}
+                <StatusBadge status={admin.isApproved ? 'success' : 'danger'}>
+                  {admin.isApproved ? 'Authorized' : 'Suspended'}
+                </StatusBadge>
+              </div>
+
+              <div className="flex items-center gap-2 pl-6 border-l border-slate-100">
                 <button
                   onClick={() => handleToggleAdminStatus(admin.id)}
-                  className={`px-3 py-1 text-xs font-medium rounded ${
-                    admin.isApproved
-                      ? 'bg-red-100 text-red-800 hover:bg-red-200'
-                      : 'bg-green-100 text-green-800 hover:bg-green-200'
+                  className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                    admin.isApproved 
+                    ? 'text-red-500 hover:bg-red-50' 
+                    : 'text-green-600 hover:bg-green-50'
                   }`}
                 >
-                  {admin.isApproved ? 'Deactivate' : 'Activate'}
+                  {admin.isApproved ? <ToggleRight size={20} /> : <ToggleLeft size={20} />}
+                  {admin.isApproved ? 'Revoke' : 'Grant'}
+                </button>
+                <button className="p-2 transition-colors text-slate-300 hover:text-slate-600">
+                  <MoreVertical size={18} />
                 </button>
               </div>
             </div>
           ))}
         </div>
-      </div>
+      </section>
 
-      {/* Add Admin Modal */}
       <AddUserModal
         isOpen={showAddAdminModal}
         onClose={() => setShowAddAdminModal(false)}
