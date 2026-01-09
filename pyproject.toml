@@ -1,0 +1,50 @@
+[tool.black]
+line-length = 88
+target-version = ["py312"]
+exclude = '''
+/(
+  \.venv
+ | venv
+ | \.git
+ | \.mypy_cache
+ | \.pytest_cache
+ | migrations
+ | static
+ | media
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 88
+skip_glob = ["**/migrations/**", "**/venv/**", "**/.venv/**"]
+
+[tool.pylint.main]
+py-version = "3.12"
+ignore = ["migrations"]
+load-plugins = ["pylint_django"]
+django-settings-module = "backend.settings"  # change if your settings module differs
+
+[tool.pylint.format]
+max-line-length = 88
+
+[tool.pylint.messages_control]
+disable = [
+  "missing-module-docstring",
+  "missing-class-docstring",
+  "missing-function-docstring",
+  "too-few-public-methods",
+  "duplicate-code"
+]
+
+[tool.ruff]
+line-length = 88
+exclude = ["migrations", "venv", ".venv"]
+select = ["E", "F", "I", "B", "UP"]
+ignore = ["E501"]  # Black handles line length
+
+[tool.ruff.lint.isort]
+known-first-party = ["backend"]  # or your project package name
+
+[tool.black]
+line-length = 88
